@@ -47,6 +47,9 @@ public class Lexer
 				return token(Kind.DEF, ":=");
 			}
 			throw new LexerException("missing '='", column);
+		case '<':
+			succ();
+			return token(Kind.WEAKER, "<");
 		}
 
 		if (Character.isDigit(peek()))
