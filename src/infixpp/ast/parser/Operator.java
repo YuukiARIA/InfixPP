@@ -30,6 +30,21 @@ public class Operator
 
 	public boolean isWeakerThan(Operator opdef)
 	{
-		return prec == opdef.prec ? isRightAssociative() : prec > opdef.prec;
+		return prec > opdef.prec;
+	}
+
+	public boolean isStrongerThan(Operator opdef)
+	{
+		return prec < opdef.prec;
+	}
+
+	public boolean shouldBeReducedBefore(Operator opdef)
+	{
+		return prec == opdef.prec ? !isRightAssociative() : isStrongerThan(opdef);
+	}
+
+	public String toString()
+	{
+		return "'" + notation + "'";
 	}
 }
