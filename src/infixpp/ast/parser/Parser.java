@@ -14,6 +14,7 @@ public class Parser
 {
 	private Lexer lexer;
 	private Token token;
+	private boolean translate;
 
 	private Map<String, Operator> operators = new HashMap<String, Operator>();
 	private LinkedList<ASTNode> lst = new LinkedList<ASTNode>();
@@ -43,6 +44,10 @@ public class Parser
 		else if (token.kind == Kind.KW_ORDER)
 		{
 			parseOrder();
+		}
+		else if (token.kind == Kind.KW_TRANSLATE)
+		{
+			parseTranslate();
 		}
 		else
 		{
@@ -176,6 +181,29 @@ public class Parser
 		}
 	}
 
+	private void parseTranslate()
+	{
+		if (token.kind == Kind.KW_TRANSLATE)
+		{
+			next();
+
+			lst.clear();
+			translate = true;
+			parseBinary();
+			translate = false;
+
+			if (token.kind == Kind.KW_END)
+			{
+				next();
+				System.out.println(lst.peek());
+			}
+			else
+			{
+				throw new RuntimeException("missing keyword 'End'");
+			}
+		}
+	}
+
 	private void parseBinary()
 	{
 		LinkedList<Operator> ost = new LinkedList<Operator>();
@@ -190,7 +218,6 @@ public class Parser
 			parsePrimary();
 		}
 		reduceAll(ost);
-		System.out.println(lst.peek());
 	}
 
 	private void parsePrimary()
