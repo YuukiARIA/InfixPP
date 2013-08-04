@@ -106,7 +106,7 @@ public class Parser
 	private void parseOrderExpression()
 	{
 		parseOrderPrimary();
-		while (token.kind == Kind.WEAKER)
+		while (token.kind == Kind.WEAKER || token.kind == Kind.COMMA)
 		{
 			next();
 			parseOrderPrimary();

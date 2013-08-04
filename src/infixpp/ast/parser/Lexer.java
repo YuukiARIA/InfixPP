@@ -35,6 +35,9 @@ public class Lexer
 		case '.':
 			succ();
 			return token(Kind.DOT, ".");
+		case ',':
+			succ();
+			return token(Kind.COMMA, ",");
 		case '"':
 			return lexLiteral();
 		case '\'':
