@@ -37,15 +37,15 @@ public class Parser
 	public void parse()
 	{
 		next();
-		if (token.kind == Kind.KW_DEF)
+		if (is(Kind.KW_DEF))
 		{
 			parseDefinition();
 		}
-		else if (token.kind == Kind.KW_ORDER)
+		else if (is(Kind.KW_ORDER))
 		{
 			parseOrder();
 		}
-		else if (token.kind == Kind.KW_TRANSLATE)
+		else if (is(Kind.KW_TRANSLATE))
 		{
 			parseTranslate();
 		}
@@ -58,19 +58,19 @@ public class Parser
 	private void parseDefinition()
 	{
 		expect(Kind.KW_DEF, "Define");
-		if (token.kind == Kind.OPERATOR_SYMBOL)
+		if (is(Kind.OPERATOR_SYMBOL))
 		{
 			String op = token.text;
 			next();
 			expect(Kind.DEF, ":=");
-			if (token.kind == Kind.LITERAL)
+			if (is(Kind.LITERAL))
 			{
 				String nodeName = token.text;
 				next();
 				boolean right = false;
-				if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
+				if (is(Kind.KW_LEFT) || is(Kind.KW_RIGHT))
 				{
-					right = token.kind == Kind.KW_RIGHT;
+					right = is(Kind.KW_RIGHT);
 					next();
 				}
 				expect(Kind.DOT, ".");
@@ -93,7 +93,7 @@ public class Parser
 	{
 		int prec = 0;
 		Set<String> ops = parseOrderPrimary();
-		if (token.kind == Kind.WEAKER)
+		if (is(Kind.WEAKER))
 		{
 			next();
 			prec = parseOrderExpression() + 1;
@@ -114,12 +114,12 @@ public class Parser
 	private Set<String> parseOrderPrimary()
 	{
 		Set<String> ops = new HashSet<String>();
-		if (token.kind == Kind.OPERATOR_SYMBOL)
+		if (is(Kind.OPERATOR_SYMBOL))
 		{
 			ops.add(token.text);
 			next();
 		}
-		else if (token.kind == Kind.L_PAREN)
+		else if (is(Kind.L_PAREN))
 		{
 			next();
 			parseOrderParallel(ops);
@@ -134,14 +134,14 @@ public class Parser
 
 	private void parseOrderParallel(Set<String> ops)
 	{
-		if (token.kind == Kind.OPERATOR_SYMBOL)
+		if (is(Kind.OPERATOR_SYMBOL))
 		{
 			ops.add(token.text);
 			next();
-			while (token.kind == Kind.COMMA)
+			while (is(Kind.COMMA))
 			{
 				next();
-				if (token.kind == Kind.OPERATOR_SYMBOL)
+				if (is(Kind.OPERATOR_SYMBOL))
 				{
 					ops.add(token.text);
 					next();
@@ -176,7 +176,7 @@ public class Parser
 		LinkedList<Operator> ost = new LinkedList<Operator>();
 
 		parsePrimary();
-		while (token.kind == Kind.OPERATOR)
+		while (is(Kind.OPERATOR))
 		{
 			String op = token.text;
 			next();
@@ -240,6 +240,11 @@ public class Parser
 	private void defineOperator(String op, String nodeName, boolean right)
 	{
 		operators.put(op, new Operator(op, nodeName, right));
+	}
+
+	private boolean is(Kind kind)
+	{
+		return token.kind == kind;
 	}
 
 	private void expect(Kind kind, String s)
