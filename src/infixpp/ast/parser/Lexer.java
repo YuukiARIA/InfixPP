@@ -138,7 +138,7 @@ public class Lexer
 		if (peek() == '"')
 		{
 			succ();
-			while (!end() && peek() != '"')
+			while (!end() && peek() != '"' && peek() != '\n')
 			{
 				buf.append(peek());
 				succ();
@@ -149,7 +149,7 @@ public class Lexer
 				return token(Kind.LITERAL, buf.toString());
 			}
 		}
-		throw new LexerException("unexpected end in literal", -1);
+		throw new LexerException("invalid literal.", column);
 	}
 
 	private Token lexOperatorSymbol() throws LexerException
