@@ -89,6 +89,14 @@ public class Lexer
 				return token(Kind.WEAKER, "<");
 			}
 			break;
+		case '#':
+			if (!inTranslate)
+			{
+				succ();
+				while (!end() && peek() != '\n') succ();
+				return lex(inTranslate);
+			}
+			break;
 		}
 
 		if (Character.isDigit(peek()))

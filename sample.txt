@@ -1,9 +1,17 @@
+
+#
+# Logic Operators
+#
 Define '<=>' := "eqv".
 Define '=>' := "imp" right.
 Define '\/' := "or".
 Define '/\' := "and".
 Order '<=>' < '=>' < '\/' < '/\'.
 
+
+#
+# Arithmetic Operators
+#
 Define '*' := "mul".
 Define '/' := "div".
 Define '+' := "add".
