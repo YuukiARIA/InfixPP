@@ -6,12 +6,13 @@ public enum Kind
 
 	DOT,
 	DEF,
-	KW_END,
 	L_PAREN,
 	R_PAREN,
 
 	KW_DEF,
+	KW_ORDER,
 	KW_TRANSLATE,
+	KW_END,
 	KW_LEFT,
 	KW_RIGHT,
 

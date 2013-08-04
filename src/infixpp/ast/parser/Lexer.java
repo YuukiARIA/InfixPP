@@ -67,9 +67,17 @@ public class Lexer
 			{
 				return token(Kind.KW_DEF, "Define");
 			}
+			else if (s.equals("Order"))
+			{
+				return token(Kind.KW_ORDER, "Order");
+			}
 			else if (s.equals("Translate"))
 			{
 				return token(Kind.KW_TRANSLATE, "Translate");
+			}
+			else if (s.equals("End"))
+			{
+				return token(Kind.KW_END, "End");
 			}
 			else if (s.equals("left"))
 			{
