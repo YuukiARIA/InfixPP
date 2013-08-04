@@ -37,7 +37,11 @@ public class Main
 	}
 }
 /*
-Define '/\' := "and" 60 left.
+Define '<=>' := "eqv" left.
+Define '=>' := "imp" right.
+Define '\/' := "or" left.
+Define '/\' := "and" left.
+Order '<=>' < '=>' < '\/' < '/\'.
 
 Define '*' := "mul" left.
 Define '/' := "div" left.
@@ -45,7 +49,6 @@ Define '+' := "add" left.
 Define '-' := "sub" left.
 Define '^' := "pow" right.
 Order ('+', '-') < ('*', '/') < '^'.
-
 Translate "a" + "b" * "c" + "d" End
 
 Order ('+', '-') < ('*', '/') < '^'.

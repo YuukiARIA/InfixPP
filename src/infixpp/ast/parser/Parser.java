@@ -49,10 +49,6 @@ public class Parser
 		{
 			parseTranslate();
 		}
-		else
-		{
-			parseBinary();
-		}
 	}
 
 	private void parseDefinition()
@@ -71,14 +67,19 @@ public class Parser
 					{
 						String nodeName = token.text;
 						next();
+						boolean right = false;
 						if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
 						{
-							boolean right = token.kind == Kind.KW_RIGHT;
+							right = token.kind == Kind.KW_RIGHT;
+							next();
+						}
+						if (token.kind == Kind.DOT)
+						{
 							next();
 							defineOperator(op, nodeName, right);
 							return;
 						}
-						throw new RuntimeException("specify associativity 'left' or 'right'.");
+						throw new RuntimeException("missing '.'");
 					}
 					throw new RuntimeException("literal.");
 				}
@@ -99,6 +100,10 @@ public class Parser
 			{
 				next();
 				return;
+			}
+			else
+			{
+				throw new RuntimeException("missing '.'");
 			}
 		}
 		throw new RuntimeException("wrong order");
@@ -122,7 +127,6 @@ public class Parser
 				continue;
 			}
 			op.setPrecedence(prec);
-			System.out.println("set precedence of " + op + " to " + prec);
 		}
 		return prec;
 	}
