@@ -12,7 +12,7 @@ public class Parser
 	private Lexer lexer;
 	private Token token;
 
-	private Map<String, OperatorDefinition> operators = new HashMap<String, OperatorDefinition>();
+	private Map<String, Operator> operators = new HashMap<String, Operator>();
 	private LinkedList<ASTNode> lst = new LinkedList<ASTNode>();
 
 	public Parser(String text)
@@ -32,7 +32,7 @@ public class Parser
 
 	private void parseBinary()
 	{
-		LinkedList<OperatorDefinition> ost = new LinkedList<OperatorDefinition>();
+		LinkedList<Operator> ost = new LinkedList<Operator>();
 
 		parsePrimary();
 		while (token.kind == Kind.OPERATOR)
@@ -72,9 +72,9 @@ public class Parser
 		}
 	}
 
-	private void processOperator(LinkedList<OperatorDefinition> ost, String op)
+	private void processOperator(LinkedList<Operator> ost, String op)
 	{
-		OperatorDefinition opdef1 = operators.get(op);
+		Operator opdef1 = operators.get(op);
 
 		if (opdef1 == null)
 		{
@@ -83,7 +83,7 @@ public class Parser
 
 		if (!ost.isEmpty())
 		{
-			OperatorDefinition opdef0 = ost.peekFirst();
+			Operator opdef0 = ost.peekFirst();
 			if (opdef1.isWeakerThan(opdef0))
 			{
 				reduce(ost);
@@ -92,7 +92,7 @@ public class Parser
 		ost.push(opdef1);
 	}
 
-	private void reduceAll(LinkedList<OperatorDefinition> ost)
+	private void reduceAll(LinkedList<Operator> ost)
 	{
 		while (!ost.isEmpty())
 		{
@@ -100,9 +100,9 @@ public class Parser
 		}
 	}
 
-	private void reduce(LinkedList<OperatorDefinition> ost)
+	private void reduce(LinkedList<Operator> ost)
 	{
-		OperatorDefinition opdef = ost.pop();
+		Operator opdef = ost.pop();
 		ASTNode y = lst.pop();
 		ASTNode x = lst.pop();
 		lst.push(new ASTNode.Binary(opdef.getNotation(), x, y));
@@ -110,7 +110,7 @@ public class Parser
 
 	private void defineOperator(String op, int prec, boolean right)
 	{
-		operators.put(op, new OperatorDefinition(op, prec, right));
+		operators.put(op, new Operator(op, prec, right));
 	}
 
 	private void next()

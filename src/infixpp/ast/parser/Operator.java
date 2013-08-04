@@ -1,12 +1,12 @@
 package infixpp.ast.parser;
 
-public class OperatorDefinition
+public class Operator
 {
 	private final String notation;
 	private final int prec;
 	private final boolean rightAssoc;
 
-	public OperatorDefinition(String notation, int prec, boolean rightAssoc)
+	public Operator(String notation, int prec, boolean rightAssoc)
 	{
 		this.notation = notation;
 		this.prec = prec;
@@ -28,7 +28,7 @@ public class OperatorDefinition
 		return rightAssoc;
 	}
 
-	public boolean isWeakerThan(OperatorDefinition opdef)
+	public boolean isWeakerThan(Operator opdef)
 	{
 		return prec == opdef.prec ? isRightAssociative() : prec > opdef.prec;
 	}
