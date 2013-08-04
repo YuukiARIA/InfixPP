@@ -22,6 +22,7 @@ public class Lexer
 	private char[] cs;
 	private int p;
 	private int column;
+	private StringBuilder buf;
 
 	public Lexer(String text)
 	{
@@ -92,7 +93,7 @@ public class Lexer
 		}
 		else if (isAlpha(peek()))
 		{
-			StringBuilder buf = new StringBuilder();
+			buf.setLength(0);
 			while (isAlpha(peek()))
 			{
 				buf.append(peek());
@@ -107,7 +108,7 @@ public class Lexer
 			throw new LexerException("unknown keyword '" + s + "'.", column);
 		}
 
-		StringBuilder buf = new StringBuilder();
+		buf.setLength(0);
 		while (!end() && !Character.isWhitespace(peek()))
 		{
 			buf.append(peek());
@@ -129,7 +130,7 @@ public class Lexer
 
 	private Token lexLiteral() throws LexerException
 	{
-		StringBuilder buf = new StringBuilder();
+		buf.setLength(0);
 		if (peek() == '"')
 		{
 			succ();
@@ -149,7 +150,7 @@ public class Lexer
 
 	private Token lexOperatorSymbol() throws LexerException
 	{
-		StringBuilder buf = new StringBuilder();
+		buf.setLength(0);
 		if (peek() == '\'')
 		{
 			succ();
