@@ -23,6 +23,7 @@ public class Lexer
 	private int p;
 	private int line;
 	private int column;
+	private int startColumn;
 	private StringBuilder buf = new StringBuilder();
 
 	public Lexer(String text)
@@ -40,6 +41,8 @@ public class Lexer
 		{
 			return new Token(Kind.END, "$", p + 1);
 		}
+
+		startColumn = column;
 
 		switch (peek())
 		{
@@ -76,7 +79,7 @@ public class Lexer
 					succ();
 					return token(Kind.DEF, ":=");
 				}
-				throw new LexerException("missing '='", column);
+				throw new LexerException("missing '='", Location.of(line, column));
 			}
 			break;
 		case '<':
@@ -106,7 +109,7 @@ public class Lexer
 			{
 				return token(kind, s);
 			}
-			throw new LexerException("unknown keyword '" + s + "'.", column);
+			throw new LexerException("unknown keyword '" + s + "'.", Location.of(line, column));
 		}
 
 		buf.setLength(0);
@@ -146,7 +149,7 @@ public class Lexer
 				return token(Kind.LITERAL, buf.toString());
 			}
 		}
-		throw new LexerException("invalid literal.", column);
+		throw new LexerException("invalid literal.", Location.of(line, startColumn));
 	}
 
 	private Token lexOperatorSymbol() throws LexerException
@@ -160,7 +163,7 @@ public class Lexer
 			{
 				if (Character.isWhitespace(peek()))
 				{
-					throw new LexerException("operator must not contain whitespaces.", column);
+					throw new LexerException("operator must not contain whitespaces.", Location.of(line, column));
 				}
 				buf.append(peek());
 				succ();
@@ -172,7 +175,7 @@ public class Lexer
 				return token(Kind.OPERATOR_SYMBOL, buf.toString());
 			}
 		}
-		throw new LexerException("invalid operator symbol.", column);
+		throw new LexerException("invalid operator symbol.", Location.of(line, column));
 	}
 
 	private Token token(Kind kind, String text)

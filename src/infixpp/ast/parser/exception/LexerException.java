@@ -1,18 +1,20 @@
 package infixpp.ast.parser.exception;
 
+import infixpp.ast.parser.Location;
+
 @SuppressWarnings("serial")
 public class LexerException extends Exception
 {
-	private int column;
+	private Location location;
 
-	public LexerException(String message, int column)
+	public LexerException(String message, Location location)
 	{
 		super(message);
-		this.column = column;
+		this.location = location;
 	}
 
-	public int getColumn()
+	public Location getLocation()
 	{
-		return column;
+		return location;
 	}
 }
