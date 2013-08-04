@@ -1,56 +1,44 @@
 package infixpp;
 
-import infixpp.ast.parser.Operator;
 import infixpp.ast.parser.Parser;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.Map;
 
 public class Main
 {
 	public static void main(String[] args)
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String source = readAll("sample.txt");
+		Parser parser = new Parser(source);
+		parser.parse();
+	}
+
+	private static String readAll(String fileName)
+	{
+		StringBuilder buf = new StringBuilder();
 		try
 		{
-			Map<String, Operator> ops = Collections.emptyMap();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 			String line;
-			while (true)
+			while ((line = reader.readLine()) != null)
 			{
-				System.out.print("> ");
-				line = reader.readLine();
-				if (line == null) break;
-
-				line = line.trim();
-				Parser parser = new Parser(line);
-				parser.addOperatorDefinitions(ops);
-				parser.parse();
-				ops = parser.getDefinedOperators();
+				buf.append(line);
+				buf.append('\n');
 			}
+			reader.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace();
 		}
+		return buf.toString();
 	}
 }
-/*
-Define '<=>' := "eqv" left.
-Define '=>' := "imp" right.
-Define '\/' := "or" left.
-Define '/\' := "and" left.
-Order '<=>' < '=>' < '\/' < '/\'.
-
-Define '*' := "mul" left.
-Define '/' := "div" left.
-Define '+' := "add" left.
-Define '-' := "sub" left.
-Define '^' := "pow" right.
-Order ('+', '-') < ('*', '/') < '^'.
-Translate "a" + "b" * "c" + "d" End
-
-Order ('+', '-') < ('*', '/') < '^'.
-
-*/

@@ -1,0 +1,21 @@
+Define '<=>' := "eqv".
+Define '=>' := "imp" right.
+Define '\/' := "or".
+Define '/\' := "and".
+Order '<=>' < '=>' < '\/' < '/\'.
+
+Define '*' := "mul".
+Define '/' := "div".
+Define '+' := "add".
+Define '-' := "sub".
+Define '^' := "pow" right.
+Order ('+', '-') < ('*', '/') < '^'.
+
+Translate
+    "a" + "b" * "c" + "d" ^ "2"
+End
+
+Translate
+    "p" => "q" => "p"
+End
+
