@@ -1,14 +1,16 @@
 package infixpp.ast;
 
+import infixpp.ast.parser.Operator;
+
 public abstract class ASTNode
 {
 	public static class Binary extends ASTNode
 	{
-		public final String operator;
+		public final Operator operator;
 		public final ASTNode x;
 		public final ASTNode y;
 
-		public Binary(String operator, ASTNode x, ASTNode y)
+		public Binary(Operator operator, ASTNode x, ASTNode y)
 		{
 			this.operator = operator;
 			this.x = x;
@@ -17,7 +19,7 @@ public abstract class ASTNode
 
 		public String toString()
 		{
-			return "(" + x + " " + operator + " " + y  + ")";
+			return operator.getNodeName() + "(" + x + ", " + y  + ")";
 		}
 	}
 

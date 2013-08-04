@@ -3,6 +3,7 @@ package infixpp.ast.parser;
 import infixpp.ast.ASTNode;
 import infixpp.ast.parser.exception.LexerException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -18,16 +19,69 @@ public class Parser
 	public Parser(String text)
 	{
 		lexer = new Lexer(text);
+	}
 
-		defineOperator("/\\", 10, false);
-		defineOperator("\\/", 20, false);
+	public Map<String, Operator> getDefinedOperators()
+	{
+		return Collections.unmodifiableMap(operators);
+	}
+
+	public void addOperatorDefinitions(Map<String, Operator> definitions)
+	{
+		operators.putAll(definitions);
 	}
 
 	public void parse()
 	{
 		next();
-		parseBinary();
-		System.out.println(lst.peek());
+		if (token.kind == Kind.KW_DEF)
+		{
+			parseDefinition();
+		}
+		else
+		{
+			parseBinary();
+		}
+	}
+
+	private void parseDefinition()
+	{
+		if (token.kind == Kind.KW_DEF)
+		{
+			next();
+			if (token.kind == Kind.OPERATOR_SYMBOL)
+			{
+				String op = token.text;
+				next();
+				if (token.kind == Kind.DEF)
+				{
+					next();
+					if (token.kind == Kind.LITERAL)
+					{
+						String nodeName = token.text;
+						next();
+						if (token.kind == Kind.INTEGER)
+						{
+							int prec = token.intValue;
+							next();
+							if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
+							{
+								boolean right = token.kind == Kind.KW_RIGHT;
+								next();
+								defineOperator(op, nodeName, prec, right);
+								return;
+							}
+							throw new RuntimeException("specify associativity 'left' or 'right'.");
+						}
+						throw new RuntimeException("specify precedence.");
+					}
+					throw new RuntimeException("literal.");
+				}
+				throw new RuntimeException("expected ':='.");
+			}
+			throw new RuntimeException("missing operator symbol.");
+		}
+		throw new RuntimeException("wrong definition statement.");
 	}
 
 	private void parseBinary()
@@ -39,12 +93,12 @@ public class Parser
 		{
 			String op = token.text;
 			next();
-			System.out.println("operator " + op);
 			processOperator(ost, op);
 
 			parsePrimary();
 		}
 		reduceAll(ost);
+		System.out.println(lst.peek());
 	}
 
 	private void parsePrimary()
@@ -81,13 +135,9 @@ public class Parser
 			throw new RuntimeException("undefined operator '" + op + "'");
 		}
 
-		if (!ost.isEmpty())
+		while (!ost.isEmpty() && ost.peek().shouldBeReducedBefore(opdef1))
 		{
-			Operator opdef0 = ost.peekFirst();
-			if (opdef1.isWeakerThan(opdef0))
-			{
-				reduce(ost);
-			}
+			reduce(ost);
 		}
 		ost.push(opdef1);
 	}
@@ -105,12 +155,12 @@ public class Parser
 		Operator opdef = ost.pop();
 		ASTNode y = lst.pop();
 		ASTNode x = lst.pop();
-		lst.push(new ASTNode.Binary(opdef.getNotation(), x, y));
+		lst.push(new ASTNode.Binary(opdef, x, y));
 	}
 
-	private void defineOperator(String op, int prec, boolean right)
+	private void defineOperator(String op, String nodeName, int prec, boolean right)
 	{
-		operators.put(op, new Operator(op, prec, right));
+		operators.put(op, new Operator(op, nodeName, prec, right));
 	}
 
 	private void next()

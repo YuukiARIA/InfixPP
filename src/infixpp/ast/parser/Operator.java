@@ -3,12 +3,14 @@ package infixpp.ast.parser;
 public class Operator
 {
 	private final String notation;
+	private final String nodeName;
 	private final int prec;
 	private final boolean rightAssoc;
 
-	public Operator(String notation, int prec, boolean rightAssoc)
+	public Operator(String notation, String nodeName, int prec, boolean rightAssoc)
 	{
 		this.notation = notation;
+		this.nodeName = nodeName;
 		this.prec = prec;
 		this.rightAssoc = rightAssoc;
 	}
@@ -16,6 +18,11 @@ public class Operator
 	public String getNotation()
 	{
 		return notation;
+	}
+
+	public String getNodeName()
+	{
+		return nodeName;
 	}
 
 	public int getPrecedence()
