@@ -39,7 +39,7 @@ public class Lexer
 
 		if (end())
 		{
-			return new Token(Kind.END, "$", p + 1);
+			return new Token(Kind.END, "$", Location.of(line, p + 1));
 		}
 
 		startColumn = column;
@@ -137,7 +137,7 @@ public class Lexer
 			value = 10 * value + (peek() - '0');
 			succ();
 		}
-		return new Token(Kind.INTEGER, value, column);
+		return new Token(Kind.INTEGER, value, Location.of(line, column));
 	}
 
 	private Token lexLiteral() throws LexerException
@@ -188,7 +188,7 @@ public class Lexer
 
 	private Token token(Kind kind, String text)
 	{
-		return new Token(kind, text, column);
+		return new Token(kind, text, Location.of(line, column));
 	}
 
 	private void skipws()

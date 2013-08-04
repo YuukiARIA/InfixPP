@@ -265,7 +265,7 @@ public class Parser
 
 	private ParserException makeException(String message)
 	{
-		return new ParserException(message, Location.of(-1, token.column));
+		return new ParserException(message, token.location);
 	}
 
 	private void next()
