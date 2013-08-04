@@ -13,7 +13,7 @@ public class Lexer
 		cs = text.toCharArray();
 	}
 
-	public Token lex() throws LexerException
+	public Token lex(boolean inTranslate) throws LexerException
 	{
 		skipws();
 
@@ -33,26 +33,42 @@ public class Lexer
 			succ();
 			return token(Kind.R_PAREN, ")");
 		case '.':
-			succ();
-			return token(Kind.DOT, ".");
+			if (!inTranslate)
+			{
+				succ();
+				return token(Kind.DOT, ".");
+			}
+			break;
 		case ',':
-			succ();
-			return token(Kind.COMMA, ",");
+			if (!inTranslate)
+			{
+				succ();
+				return token(Kind.COMMA, ",");
+			}
+			break;
 		case '"':
 			return lexLiteral();
 		case '\'':
 			return lexOperatorSymbol();
 		case ':':
-			succ();
-			if (peek() == '=')
+			if (!inTranslate)
 			{
 				succ();
-				return token(Kind.DEF, ":=");
+				if (peek() == '=')
+				{
+					succ();
+					return token(Kind.DEF, ":=");
+				}
+				throw new LexerException("missing '='", column);
 			}
-			throw new LexerException("missing '='", column);
+			break;
 		case '<':
-			succ();
-			return token(Kind.WEAKER, "<");
+			if (!inTranslate)
+			{
+				succ();
+				return token(Kind.WEAKER, "<");
+			}
+			break;
 		}
 
 		if (Character.isDigit(peek()))

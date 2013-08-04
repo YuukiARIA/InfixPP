@@ -286,7 +286,7 @@ public class Parser
 	{
 		try
 		{
-			token = lexer.lex();
+			token = lexer.lex(translate);
 		}
 		catch (LexerException e)
 		{
