@@ -1,6 +1,7 @@
 package infixpp;
 
 import infixpp.ast.parser.Parser;
+import infixpp.ast.parser.exception.ParserException;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -14,7 +15,14 @@ public class Main
 	{
 		String source = readAll("sample.txt");
 		Parser parser = new Parser(source);
-		parser.parse();
+		try
+		{
+			parser.parse();
+		}
+		catch (ParserException e)
+		{
+			System.err.println("Syntax error: " + e.getMessage() + " " + e.getLocation());
+		}
 	}
 
 	private static String readAll(String fileName)

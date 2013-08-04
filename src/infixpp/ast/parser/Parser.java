@@ -2,6 +2,7 @@ package infixpp.ast.parser;
 
 import infixpp.ast.ASTNode;
 import infixpp.ast.parser.exception.LexerException;
+import infixpp.ast.parser.exception.ParserException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class Parser
 		operators.putAll(definitions);
 	}
 
-	public void parse()
+	public void parse() throws ParserException
 	{
 		next();
 		while (!is(Kind.END))
@@ -53,7 +54,7 @@ public class Parser
 			}
 			else
 			{
-				throw new RuntimeException("Statement must be started with Define/Order/Translate.");
+				throw makeException("Statement must be started with Define/Order/Translate.");
 			}
 		}
 	}
@@ -260,6 +261,11 @@ public class Parser
 		{
 			throw new RuntimeException("expected '" + s + "'");
 		}
+	}
+
+	private ParserException makeException(String message)
+	{
+		return new ParserException(message, Location.of(-1, token.column));
 	}
 
 	private void next()
