@@ -24,4 +24,5 @@
 <<InfixExpr>>
     ::= <LITERAL> { <OP> <LITERAL> }           // left assoc
       | <LITERAL> [ <OP> <<InfixExpr>> ]       // right assoc
+      | "(" <<InfixExpr>> ")"
 
