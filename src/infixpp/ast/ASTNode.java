@@ -14,6 +14,11 @@ public abstract class ASTNode
 			this.x = x;
 			this.y = y;
 		}
+
+		public String toString()
+		{
+			return "(" + x + " " + operator + " " + y  + ")";
+		}
 	}
 
 	public static class Literal extends ASTNode
@@ -23,6 +28,11 @@ public abstract class ASTNode
 		public Literal(String value)
 		{
 			this.value = value;
+		}
+
+		public String toString()
+		{
+			return value;
 		}
 	}
 }
