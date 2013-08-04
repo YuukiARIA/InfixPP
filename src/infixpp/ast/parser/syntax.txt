@@ -1,6 +1,8 @@
 
-
 <<Script>>
+    ::= { <<Statement>> }
+
+<<Statement>>
     ::= <<Definition>>
       | <<Order>>
       | <<Translate>>

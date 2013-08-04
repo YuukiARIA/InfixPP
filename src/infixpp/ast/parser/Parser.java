@@ -37,21 +37,24 @@ public class Parser
 	public void parse()
 	{
 		next();
-		if (is(Kind.KW_DEF))
+		while (!is(Kind.END))
 		{
-			parseDefinition();
-		}
-		else if (is(Kind.KW_ORDER))
-		{
-			parseOrder();
-		}
-		else if (is(Kind.KW_TRANSLATE))
-		{
-			parseTranslate();
-		}
-		else
-		{
-			throw new RuntimeException("Statement must be started with Define/Order/Translate.");
+			if (is(Kind.KW_DEF))
+			{
+				parseDefinition();
+			}
+			else if (is(Kind.KW_ORDER))
+			{
+				parseOrder();
+			}
+			else if (is(Kind.KW_TRANSLATE))
+			{
+				parseTranslate();
+			}
+			else
+			{
+				throw new RuntimeException("Statement must be started with Define/Order/Translate.");
+			}
 		}
 	}
 
