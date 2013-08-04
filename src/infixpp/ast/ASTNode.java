@@ -4,6 +4,11 @@ import infixpp.ast.parser.Operator;
 
 public abstract class ASTNode
 {
+	public ASTNode bind(Operator op, ASTNode y)
+	{
+		return new Binary(op, this, y);
+	}
+
 	public static class Binary extends ASTNode
 	{
 		public final Operator operator;

@@ -49,64 +49,44 @@ public class Parser
 		{
 			parseTranslate();
 		}
+		else
+		{
+			throw new RuntimeException("Statement must be started with Define/Order/Translate.");
+		}
 	}
 
 	private void parseDefinition()
 	{
-		if (token.kind == Kind.KW_DEF)
+		expect(Kind.KW_DEF, "Define");
+		if (token.kind == Kind.OPERATOR_SYMBOL)
 		{
+			String op = token.text;
 			next();
-			if (token.kind == Kind.OPERATOR_SYMBOL)
+			expect(Kind.DEF, ":=");
+			if (token.kind == Kind.LITERAL)
 			{
-				String op = token.text;
+				String nodeName = token.text;
 				next();
-				if (token.kind == Kind.DEF)
+				boolean right = false;
+				if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
 				{
+					right = token.kind == Kind.KW_RIGHT;
 					next();
-					if (token.kind == Kind.LITERAL)
-					{
-						String nodeName = token.text;
-						next();
-						boolean right = false;
-						if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
-						{
-							right = token.kind == Kind.KW_RIGHT;
-							next();
-						}
-						if (token.kind == Kind.DOT)
-						{
-							next();
-							defineOperator(op, nodeName, right);
-							return;
-						}
-						throw new RuntimeException("missing '.'");
-					}
-					throw new RuntimeException("literal.");
 				}
-				throw new RuntimeException("expected ':='.");
+				expect(Kind.DOT, ".");
+				defineOperator(op, nodeName, right);
+				return;
 			}
-			throw new RuntimeException("missing operator symbol.");
+			throw new RuntimeException("literal.");
 		}
-		throw new RuntimeException("wrong definition statement.");
+		throw new RuntimeException("missing operator symbol.");
 	}
 
 	private void parseOrder()
 	{
-		if (token.kind == Kind.KW_ORDER)
-		{
-			next();
-			parseOrderExpression();
-			if (token.kind == Kind.DOT)
-			{
-				next();
-				return;
-			}
-			else
-			{
-				throw new RuntimeException("missing '.'");
-			}
-		}
-		throw new RuntimeException("wrong order");
+		expect(Kind.KW_ORDER, "Order");
+		parseOrderExpression();
+		expect(Kind.DOT, ".");
 	}
 
 	private int parseOrderExpression()
@@ -143,14 +123,7 @@ public class Parser
 		{
 			next();
 			parseOrderParallel(ops);
-			if (token.kind == Kind.R_PAREN)
-			{
-				next();
-			}
-			else
-			{
-				throw new RuntimeException("missing ')'");
-			}
+			expect(Kind.R_PAREN, ")");
 		}
 		else
 		{
@@ -187,25 +160,15 @@ public class Parser
 
 	private void parseTranslate()
 	{
-		if (token.kind == Kind.KW_TRANSLATE)
-		{
-			next();
+		expect(Kind.KW_TRANSLATE, "Translate");
 
-			lst.clear();
-			translate = true;
-			parseBinary();
-			translate = false;
+		lst.clear();
+		translate = true;
+		parseBinary();
+		translate = false;
 
-			if (token.kind == Kind.KW_END)
-			{
-				next();
-				System.out.println(lst.peek());
-			}
-			else
-			{
-				throw new RuntimeException("missing keyword 'End'");
-			}
-		}
+		expect(Kind.KW_END, "End");
+		System.out.println(lst.peek());
 	}
 
 	private void parseBinary()
@@ -235,15 +198,8 @@ public class Parser
 		case L_PAREN:
 			next();
 			parseBinary();
-			if (token.kind == Kind.R_PAREN)
-			{
-				next();
-				break;
-			}
-			else
-			{
-				throw new RuntimeException("missing ')'");
-			}
+			expect(Kind.R_PAREN, ")");
+			break;
 		default:
 			throw new RuntimeException("unexpected " + token);
 		}
@@ -278,12 +234,24 @@ public class Parser
 		Operator opdef = ost.pop();
 		ASTNode y = lst.pop();
 		ASTNode x = lst.pop();
-		lst.push(new ASTNode.Binary(opdef, x, y));
+		lst.push(x.bind(opdef, y));
 	}
 
 	private void defineOperator(String op, String nodeName, boolean right)
 	{
 		operators.put(op, new Operator(op, nodeName, right));
+	}
+
+	private void expect(Kind kind, String s)
+	{
+		if (token.kind == kind)
+		{
+			next();
+		}
+		else
+		{
+			throw new RuntimeException("expected '" + s + "'");
+		}
 	}
 
 	private void next()
