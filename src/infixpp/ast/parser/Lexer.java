@@ -158,20 +158,24 @@ public class Lexer
 		if (peek() == '\'')
 		{
 			succ();
-			while (!end() && Character.isWhitespace(peek())) succ();
-			while (!end() && peek() != '\'' && !Character.isWhitespace(peek()))
+			skipws();
+			while (!end() && peek() != '\'')
 			{
+				if (Character.isWhitespace(peek()))
+				{
+					throw new LexerException("operator must not contain whitespaces.", column);
+				}
 				buf.append(peek());
 				succ();
 			}
-			while (!end() && Character.isWhitespace(peek())) succ();
+			skipws();
 			if (peek() == '\'')
 			{
 				succ();
 				return token(Kind.OPERATOR_SYMBOL, buf.toString());
 			}
 		}
-		throw new LexerException("wrong operator symbol", -1);
+		throw new LexerException("invalid operator symbol.", column);
 	}
 
 	private Token token(Kind kind, String text)
