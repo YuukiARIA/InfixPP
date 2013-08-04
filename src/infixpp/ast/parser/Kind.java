@@ -8,6 +8,7 @@ public enum Kind
 	DEF,
 	L_PAREN,
 	R_PAREN,
+	WEAKER,
 
 	KW_DEF,
 	KW_ORDER,

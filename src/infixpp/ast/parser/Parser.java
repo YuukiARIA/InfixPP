@@ -38,6 +38,10 @@ public class Parser
 		{
 			parseDefinition();
 		}
+		else if (token.kind == Kind.KW_ORDER)
+		{
+			parseOrder();
+		}
 		else
 		{
 			parseBinary();
@@ -82,6 +86,55 @@ public class Parser
 			throw new RuntimeException("missing operator symbol.");
 		}
 		throw new RuntimeException("wrong definition statement.");
+	}
+
+	private void parseOrder()
+	{
+		if (token.kind == Kind.KW_ORDER)
+		{
+			next();
+			parseOrderExpression();
+			if (token.kind == Kind.DOT)
+			{
+				next();
+				return;
+			}
+		}
+		throw new RuntimeException("wrong order");
+	}
+
+	private void parseOrderExpression()
+	{
+		parseOrderPrimary();
+		while (token.kind == Kind.WEAKER)
+		{
+			next();
+			parseOrderPrimary();
+		}
+	}
+
+	private void parseOrderPrimary()
+	{
+		switch (token.kind)
+		{
+		case OPERATOR_SYMBOL:
+			next();
+			break;
+		case L_PAREN:
+			next();
+			parseOrderExpression();
+			if (token.kind == Kind.R_PAREN)
+			{
+				next();
+				break;
+			}
+			else
+			{
+				throw new RuntimeException("missing ')'");
+			}
+		default:
+			throw new RuntimeException("unexpected " + token);
+		}
 	}
 
 	private void parseBinary()

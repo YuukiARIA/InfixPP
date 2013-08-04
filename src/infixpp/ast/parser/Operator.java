@@ -2,10 +2,10 @@ package infixpp.ast.parser;
 
 public class Operator
 {
-	private final String notation;
-	private final String nodeName;
-	private final int prec;
-	private final boolean rightAssoc;
+	private String notation;
+	private String nodeName;
+	private int prec;
+	private boolean rightAssoc;
 
 	public Operator(String notation, String nodeName, int prec, boolean rightAssoc)
 	{
@@ -28,6 +28,11 @@ public class Operator
 	public int getPrecedence()
 	{
 		return prec;
+	}
+
+	public void setPrecedence(int prec)
+	{
+		this.prec = prec;
 	}
 
 	public boolean isRightAssociative()
