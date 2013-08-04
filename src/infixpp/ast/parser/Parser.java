@@ -54,12 +54,12 @@ public class Parser
 			}
 			else
 			{
-				throw makeException("Statement must be started with Define/Order/Translate.");
+				throw makeException("statement must be started with Define/Order/Translate.");
 			}
 		}
 	}
 
-	private void parseDefinition()
+	private void parseDefinition() throws ParserException
 	{
 		expect(Kind.KW_DEF, "Define");
 		if (is(Kind.OPERATOR_SYMBOL))
@@ -81,19 +81,19 @@ public class Parser
 				defineOperator(op, nodeName, right);
 				return;
 			}
-			throw new RuntimeException("literal.");
+			throw makeException("literal.");
 		}
-		throw new RuntimeException("missing operator symbol.");
+		throw makeException("missing operator symbol.");
 	}
 
-	private void parseOrder()
+	private void parseOrder() throws ParserException
 	{
 		expect(Kind.KW_ORDER, "Order");
 		parseOrderExpression();
 		expect(Kind.DOT, ".");
 	}
 
-	private int parseOrderExpression()
+	private int parseOrderExpression() throws ParserException
 	{
 		int prec = 0;
 		Set<String> ops = parseOrderPrimary();
@@ -115,7 +115,7 @@ public class Parser
 		return prec;
 	}
 
-	private Set<String> parseOrderPrimary()
+	private Set<String> parseOrderPrimary() throws ParserException
 	{
 		Set<String> ops = new HashSet<String>();
 		if (is(Kind.OPERATOR_SYMBOL))
@@ -131,12 +131,12 @@ public class Parser
 		}
 		else
 		{
-			throw new RuntimeException("unexpected " + token);
+			throw makeException("unexpected " + token);
 		}
 		return ops;
 	}
 
-	private void parseOrderParallel(Set<String> ops)
+	private void parseOrderParallel(Set<String> ops) throws ParserException
 	{
 		if (is(Kind.OPERATOR_SYMBOL))
 		{
@@ -152,17 +152,17 @@ public class Parser
 				}
 				else
 				{
-					throw new RuntimeException("expected operator symbol");
+					throw makeException("expected operator symbol");
 				}
 			}
 		}
 		else
 		{
-			throw new RuntimeException("expected operator symbol");
+			throw makeException("expected operator symbol");
 		}
 	}
 
-	private void parseTranslate()
+	private void parseTranslate() throws ParserException
 	{
 		expect(Kind.KW_TRANSLATE, "Translate");
 
@@ -175,7 +175,7 @@ public class Parser
 		System.out.println(lst.peek());
 	}
 
-	private void parseBinary()
+	private void parseBinary() throws ParserException
 	{
 		LinkedList<Operator> ost = new LinkedList<Operator>();
 
@@ -191,7 +191,7 @@ public class Parser
 		reduceAll(ost);
 	}
 
-	private void parsePrimary()
+	private void parsePrimary() throws ParserException
 	{
 		switch (token.kind)
 		{
@@ -205,7 +205,7 @@ public class Parser
 			expect(Kind.R_PAREN, ")");
 			break;
 		default:
-			throw new RuntimeException("unexpected " + token);
+			throw makeException("unexpected " + token);
 		}
 	}
 
@@ -251,7 +251,7 @@ public class Parser
 		return token.kind == kind;
 	}
 
-	private void expect(Kind kind, String s)
+	private void expect(Kind kind, String s) throws ParserException
 	{
 		if (token.kind == kind)
 		{
@@ -259,7 +259,7 @@ public class Parser
 		}
 		else
 		{
-			throw new RuntimeException("expected '" + s + "'");
+			throw makeException("expected '" + s + "'");
 		}
 	}
 
@@ -268,7 +268,7 @@ public class Parser
 		return new ParserException(message, token.location);
 	}
 
-	private void next()
+	private void next() throws ParserException
 	{
 		try
 		{
@@ -276,7 +276,7 @@ public class Parser
 		}
 		catch (LexerException e)
 		{
-			throw new RuntimeException(e);
+			throw new ParserException(e);
 		}
 	}
 }
