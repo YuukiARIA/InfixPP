@@ -7,11 +7,10 @@ public class Operator
 	private int prec;
 	private boolean rightAssoc;
 
-	public Operator(String notation, String nodeName, int prec, boolean rightAssoc)
+	public Operator(String notation, String nodeName, boolean rightAssoc)
 	{
 		this.notation = notation;
 		this.nodeName = nodeName;
-		this.prec = prec;
 		this.rightAssoc = rightAssoc;
 	}
 

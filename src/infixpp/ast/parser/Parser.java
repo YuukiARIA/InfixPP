@@ -5,8 +5,10 @@ import infixpp.ast.parser.exception.LexerException;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 public class Parser
 {
@@ -64,20 +66,14 @@ public class Parser
 					{
 						String nodeName = token.text;
 						next();
-						if (token.kind == Kind.INTEGER)
+						if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
 						{
-							int prec = token.intValue;
+							boolean right = token.kind == Kind.KW_RIGHT;
 							next();
-							if (token.kind == Kind.KW_LEFT || token.kind == Kind.KW_RIGHT)
-							{
-								boolean right = token.kind == Kind.KW_RIGHT;
-								next();
-								defineOperator(op, nodeName, prec, right);
-								return;
-							}
-							throw new RuntimeException("specify associativity 'left' or 'right'.");
+							defineOperator(op, nodeName, right);
+							return;
 						}
-						throw new RuntimeException("specify precedence.");
+						throw new RuntimeException("specify associativity 'left' or 'right'.");
 					}
 					throw new RuntimeException("literal.");
 				}
@@ -103,37 +99,80 @@ public class Parser
 		throw new RuntimeException("wrong order");
 	}
 
-	private void parseOrderExpression()
+	private int parseOrderExpression()
 	{
-		parseOrderPrimary();
-		while (token.kind == Kind.WEAKER || token.kind == Kind.COMMA)
+		int prec = 0;
+		Set<String> ops = parseOrderPrimary();
+		if (token.kind == Kind.WEAKER)
 		{
 			next();
-			parseOrderPrimary();
+			prec = parseOrderExpression() + 1;
 		}
+		for (String opstr : ops)
+		{
+			Operator op = operators.get(opstr);
+			if (op == null)
+			{
+				System.out.println("undefined operator " + op);
+				continue;
+			}
+			op.setPrecedence(prec);
+			System.out.println("set precedence of " + op + " to " + prec);
+		}
+		return prec;
 	}
 
-	private void parseOrderPrimary()
+	private Set<String> parseOrderPrimary()
 	{
-		switch (token.kind)
+		Set<String> ops = new HashSet<String>();
+		if (token.kind == Kind.OPERATOR_SYMBOL)
 		{
-		case OPERATOR_SYMBOL:
+			ops.add(token.text);
 			next();
-			break;
-		case L_PAREN:
+		}
+		else if (token.kind == Kind.L_PAREN)
+		{
 			next();
-			parseOrderExpression();
+			parseOrderParallel(ops);
 			if (token.kind == Kind.R_PAREN)
 			{
 				next();
-				break;
 			}
 			else
 			{
 				throw new RuntimeException("missing ')'");
 			}
-		default:
+		}
+		else
+		{
 			throw new RuntimeException("unexpected " + token);
+		}
+		return ops;
+	}
+
+	private void parseOrderParallel(Set<String> ops)
+	{
+		if (token.kind == Kind.OPERATOR_SYMBOL)
+		{
+			ops.add(token.text);
+			next();
+			while (token.kind == Kind.COMMA)
+			{
+				next();
+				if (token.kind == Kind.OPERATOR_SYMBOL)
+				{
+					ops.add(token.text);
+					next();
+				}
+				else
+				{
+					throw new RuntimeException("expected operator symbol");
+				}
+			}
+		}
+		else
+		{
+			throw new RuntimeException("expected operator symbol");
 		}
 	}
 
@@ -211,9 +250,9 @@ public class Parser
 		lst.push(new ASTNode.Binary(opdef, x, y));
 	}
 
-	private void defineOperator(String op, String nodeName, int prec, boolean right)
+	private void defineOperator(String op, String nodeName, boolean right)
 	{
-		operators.put(op, new Operator(op, nodeName, prec, right));
+		operators.put(op, new Operator(op, nodeName, right));
 	}
 
 	private void next()
