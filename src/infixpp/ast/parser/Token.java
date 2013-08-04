@@ -24,4 +24,9 @@ public class Token
 		this.intValue = intValue;
 		this.column = column;
 	}
+
+	public String toString()
+	{
+		return kind + "'" + text + "'";
+	}
 }
