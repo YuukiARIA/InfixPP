@@ -2,8 +2,23 @@ package infixpp.ast.parser;
 
 import infixpp.ast.parser.exception.LexerException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Lexer
 {
+	private static Map<String, Kind> keywords = new HashMap<String, Kind>();
+
+	static
+	{
+		keywords.put("Define", Kind.KW_DEF);
+		keywords.put("Order", Kind.KW_ORDER);
+		keywords.put("Translate", Kind.KW_TRANSLATE);
+		keywords.put("End", Kind.KW_END);
+		keywords.put("left", Kind.KW_LEFT);
+		keywords.put("right", Kind.KW_RIGHT);
+	}
+
 	private char[] cs;
 	private int p;
 	private int column;
@@ -75,8 +90,7 @@ public class Lexer
 		{
 			return lexInteger();
 		}
-
-		if (isAlpha(peek()))
+		else if (isAlpha(peek()))
 		{
 			StringBuilder buf = new StringBuilder();
 			while (isAlpha(peek()))
@@ -85,31 +99,12 @@ public class Lexer
 				succ();
 			}
 			String s = buf.toString();
-			if (s.equals("Define"))
+			Kind kind = keywords.get(s);
+			if (kind != null)
 			{
-				return token(Kind.KW_DEF, "Define");
+				return token(kind, s);
 			}
-			else if (s.equals("Order"))
-			{
-				return token(Kind.KW_ORDER, "Order");
-			}
-			else if (s.equals("Translate"))
-			{
-				return token(Kind.KW_TRANSLATE, "Translate");
-			}
-			else if (s.equals("End"))
-			{
-				return token(Kind.KW_END, "End");
-			}
-			else if (s.equals("left"))
-			{
-				return token(Kind.KW_LEFT, "left");
-			}
-			else if (s.equals("right"))
-			{
-				return token(Kind.KW_RIGHT, "right");
-			}
-			throw new LexerException("unknown keyword " + s, column);
+			throw new LexerException("unknown keyword '" + s + "'.", column);
 		}
 
 		StringBuilder buf = new StringBuilder();
