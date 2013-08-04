@@ -167,12 +167,8 @@ public class Lexer
 		{
 			succ();
 			skipws();
-			while (!end() && peek() != '\'')
+			while (!end() && peek() != '\'' && !Character.isWhitespace(peek()))
 			{
-				if (Character.isWhitespace(peek()))
-				{
-					throw new LexerException("operator must not contain whitespaces.", Location.of(line, column));
-				}
 				buf.append(peek());
 				succ();
 			}
@@ -188,7 +184,7 @@ public class Lexer
 
 	private Token token(Kind kind, String text)
 	{
-		return new Token(kind, text, Location.of(line, column));
+		return new Token(kind, text, Location.of(line, startColumn));
 	}
 
 	private void skipws()
