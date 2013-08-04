@@ -21,12 +21,15 @@ public class Lexer
 
 	private char[] cs;
 	private int p;
+	private int line;
 	private int column;
-	private StringBuilder buf;
+	private StringBuilder buf = new StringBuilder();
 
 	public Lexer(String text)
 	{
 		cs = text.toCharArray();
+		line = 1;
+		column = 1;
 	}
 
 	public Token lex(boolean inTranslate) throws LexerException
@@ -37,8 +40,6 @@ public class Lexer
 		{
 			return new Token(Kind.END, "$", p + 1);
 		}
-
-		column = p + 1;
 
 		switch (peek())
 		{
@@ -191,7 +192,19 @@ public class Lexer
 
 	private void succ()
 	{
-		if (!end()) ++p;
+		if (!end())
+		{
+			if (peek() == '\n')
+			{
+				++line;
+				column = 1;
+			}
+			else
+			{
+				++column;
+			}
+			++p;
+		}
 	}
 
 	private boolean end()
