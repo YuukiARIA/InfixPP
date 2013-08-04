@@ -1,0 +1,27 @@
+
+
+<<Script>>
+    ::= <<Definition>>
+      | <<Order>>
+      | <<Translate>>
+
+<<Definition>>
+    ::= "Define" <OPSYM> ":=" <LITERAL> [ "left" | "right" ] "."
+
+<<Order>>
+    ::= "Order" <<OrderList>> "."
+
+<<OrderList>>
+    ::= <<OrderPrimary>> [ "<" <<OrderList>> ]
+
+<<OrderPrimary>>
+    ::= <OPSYM>
+      | "(" <OPSYM> { "," <OPSYM> } ")"
+
+<<Translate>>
+    ::= "Translate" <<InfixExpr>> "End"
+
+<<InfixExpr>>
+    ::= <LITERAL> { <OP> <LITERAL> }           // left assoc
+      | <LITERAL> [ <OP> <<InfixExpr>> ]       // right assoc
+
