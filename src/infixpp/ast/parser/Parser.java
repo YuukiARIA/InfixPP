@@ -96,32 +96,25 @@ public class Parser
 	private int parseOrderExpression() throws ParserException
 	{
 		int prec = 0;
-		Set<String> ops = parseOrderPrimary();
+		Set<Operator> ops = parseOrderPrimary();
 		if (is(Kind.WEAKER))
 		{
 			next();
 			prec = parseOrderExpression() + 1;
 		}
-		for (String opstr : ops)
+		for (Operator op : ops)
 		{
-			Operator op = operators.get(opstr);
-			if (op == null)
-			{
-				System.out.println("undefined operator " + op);
-				continue;
-			}
 			op.setPrecedence(prec);
 		}
 		return prec;
 	}
 
-	private Set<String> parseOrderPrimary() throws ParserException
+	private Set<Operator> parseOrderPrimary() throws ParserException
 	{
-		Set<String> ops = new HashSet<String>();
+		Set<Operator> ops = new HashSet<Operator>();
 		if (is(Kind.OPERATOR_SYMBOL))
 		{
-			ops.add(token.text);
-			next();
+			ops.add(parseOperatorSymbol());
 		}
 		else if (is(Kind.L_PAREN))
 		{
@@ -136,29 +129,31 @@ public class Parser
 		return ops;
 	}
 
-	private void parseOrderParallel(Set<String> ops) throws ParserException
+	private void parseOrderParallel(Set<Operator> ops) throws ParserException
+	{
+		ops.add(parseOperatorSymbol());
+		while (is(Kind.COMMA))
+		{
+			next();
+			ops.add(parseOperatorSymbol());
+		}
+	}
+
+	private Operator parseOperatorSymbol() throws ParserException
 	{
 		if (is(Kind.OPERATOR_SYMBOL))
 		{
-			ops.add(token.text);
-			next();
-			while (is(Kind.COMMA))
+			Operator op = operators.get(token.text);
+			if (op == null)
 			{
-				next();
-				if (is(Kind.OPERATOR_SYMBOL))
-				{
-					ops.add(token.text);
-					next();
-				}
-				else
-				{
-					throw makeException("expected operator symbol");
-				}
+				throw makeException("undefined operator '" + token.text + "'");
 			}
+			next();
+			return op;
 		}
 		else
 		{
-			throw makeException("expected operator symbol");
+			throw makeException("expected operator symbol.");
 		}
 	}
 
@@ -209,13 +204,13 @@ public class Parser
 		}
 	}
 
-	private void processOperator(LinkedList<Operator> ost, String op)
+	private void processOperator(LinkedList<Operator> ost, String op) throws ParserException
 	{
 		Operator opdef1 = operators.get(op);
 
 		if (opdef1 == null)
 		{
-			throw new RuntimeException("undefined operator '" + op + "'");
+			throw makeException("undefined operator '" + op + "'");
 		}
 
 		while (!ost.isEmpty() && ost.peek().shouldBeReducedBefore(opdef1))
