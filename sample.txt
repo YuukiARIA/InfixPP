@@ -24,6 +24,7 @@ Translate
 End
 
 Translate
-    "p" => "q" => "p"
+    ("p" => "q" => "p") <=>
+        ("a" \/ ("a" => "false"))
 End
 
