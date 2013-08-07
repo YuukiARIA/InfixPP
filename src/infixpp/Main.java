@@ -13,16 +13,24 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		String source = readAll("sample.txt");
-		Parser parser = new Parser(source);
-		try
+		for (String arg : args)
 		{
-			parser.parse();
+			String source = readAll(arg);
+			Parser parser = new Parser(source);
+			try
+			{
+				parser.parse();
+			}
+			catch (ParserException e)
+			{
+				printError(arg, e);
+			}
 		}
-		catch (ParserException e)
-		{
-			System.err.println("Syntax error: " + e.getMessage() + " " + e.getLocation());
-		}
+	}
+
+	private static void printError(String fileName, ParserException e)
+	{
+		System.err.println(fileName + ": syntax error. " + e.getMessage() + " " + e.getLocation());
 	}
 
 	private static String readAll(String fileName)
