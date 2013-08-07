@@ -1,5 +1,6 @@
 package infixpp;
 
+import infixpp.ast.Context;
 import infixpp.ast.parser.Parser;
 import infixpp.ast.parser.exception.ParserException;
 
@@ -13,13 +14,14 @@ public class Main
 {
 	public static void main(String[] args)
 	{
+		Context ctx = new Context();
 		for (String arg : args)
 		{
 			String source = readAll(arg);
 			Parser parser = new Parser(source);
 			try
 			{
-				parser.parse();
+				parser.parse(ctx);
 			}
 			catch (ParserException e)
 			{

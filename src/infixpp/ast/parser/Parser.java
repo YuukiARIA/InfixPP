@@ -1,14 +1,12 @@
 package infixpp.ast.parser;
 
 import infixpp.ast.ASTNode;
+import infixpp.ast.Context;
 import infixpp.ast.parser.exception.LexerException;
 import infixpp.ast.parser.exception.ParserException;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 public class Parser
@@ -17,7 +15,6 @@ public class Parser
 	private Token token;
 	private boolean translate;
 
-	private Map<String, Operator> operators = new HashMap<String, Operator>();
 	private LinkedList<ASTNode> lst = new LinkedList<ASTNode>();
 
 	public Parser(String text)
@@ -25,32 +22,22 @@ public class Parser
 		lexer = new Lexer(text);
 	}
 
-	public Map<String, Operator> getDefinedOperators()
-	{
-		return Collections.unmodifiableMap(operators);
-	}
-
-	public void addOperatorDefinitions(Map<String, Operator> definitions)
-	{
-		operators.putAll(definitions);
-	}
-
-	public void parse() throws ParserException
+	public void parse(Context ctx) throws ParserException
 	{
 		next();
 		while (!is(Kind.END))
 		{
 			if (is(Kind.KW_DEF))
 			{
-				parseDefinition();
+				parseDefinition(ctx);
 			}
 			else if (is(Kind.KW_ORDER))
 			{
-				parseOrder();
+				parseOrder(ctx);
 			}
 			else if (is(Kind.KW_TRANSLATE))
 			{
-				parseTranslate();
+				parseTranslate(ctx);
 			}
 			else
 			{
@@ -59,7 +46,7 @@ public class Parser
 		}
 	}
 
-	private void parseDefinition() throws ParserException
+	private void parseDefinition(Context ctx) throws ParserException
 	{
 		expect(Kind.KW_DEF, "Define");
 		if (is(Kind.OPERATOR_SYMBOL))
@@ -78,7 +65,7 @@ public class Parser
 					next();
 				}
 				expect(Kind.DOT, ".");
-				defineOperator(op, nodeName, right);
+				ctx.addOperator(op, nodeName, right);
 				return;
 			}
 			throw makeException("literal.");
@@ -86,21 +73,21 @@ public class Parser
 		throw makeException("missing operator symbol.");
 	}
 
-	private void parseOrder() throws ParserException
+	private void parseOrder(Context ctx) throws ParserException
 	{
 		expect(Kind.KW_ORDER, "Order");
-		parseOrderExpression();
+		parseOrderExpression(ctx);
 		expect(Kind.DOT, ".");
 	}
 
-	private int parseOrderExpression() throws ParserException
+	private int parseOrderExpression(Context ctx) throws ParserException
 	{
 		int prec = 0;
-		Set<Operator> ops = parseOrderPrimary();
+		Set<Operator> ops = parseOrderPrimary(ctx);
 		if (is(Kind.WEAKER))
 		{
 			next();
-			prec = parseOrderExpression() + 1;
+			prec = parseOrderExpression(ctx) + 1;
 		}
 		for (Operator op : ops)
 		{
@@ -109,17 +96,17 @@ public class Parser
 		return prec;
 	}
 
-	private Set<Operator> parseOrderPrimary() throws ParserException
+	private Set<Operator> parseOrderPrimary(Context ctx) throws ParserException
 	{
 		Set<Operator> ops = new HashSet<Operator>();
 		if (is(Kind.OPERATOR_SYMBOL))
 		{
-			ops.add(parseOperatorSymbol());
+			ops.add(parseOperatorSymbol(ctx));
 		}
 		else if (is(Kind.L_PAREN))
 		{
 			next();
-			parseOrderParallel(ops);
+			parseOrderParallel(ctx, ops);
 			expect(Kind.R_PAREN, ")");
 		}
 		else
@@ -129,21 +116,21 @@ public class Parser
 		return ops;
 	}
 
-	private void parseOrderParallel(Set<Operator> ops) throws ParserException
+	private void parseOrderParallel(Context ctx, Set<Operator> ops) throws ParserException
 	{
-		ops.add(parseOperatorSymbol());
+		ops.add(parseOperatorSymbol(ctx));
 		while (is(Kind.COMMA))
 		{
 			next();
-			ops.add(parseOperatorSymbol());
+			ops.add(parseOperatorSymbol(ctx));
 		}
 	}
 
-	private Operator parseOperatorSymbol() throws ParserException
+	private Operator parseOperatorSymbol(Context ctx) throws ParserException
 	{
 		if (is(Kind.OPERATOR_SYMBOL))
 		{
-			Operator op = operators.get(token.text);
+			Operator op = ctx.getOperator(token.text);
 			if (op == null)
 			{
 				throw makeException("undefined operator '" + token.text + "'");
@@ -157,36 +144,36 @@ public class Parser
 		}
 	}
 
-	private void parseTranslate() throws ParserException
+	private void parseTranslate(Context ctx) throws ParserException
 	{
 		expect(Kind.KW_TRANSLATE, "Translate");
 
 		lst.clear();
 		translate = true;
-		parseBinary();
+		parseBinary(ctx);
 		translate = false;
 
 		expect(Kind.KW_END, "End");
 		System.out.println(lst.peek());
 	}
 
-	private void parseBinary() throws ParserException
+	private void parseBinary(Context ctx) throws ParserException
 	{
 		LinkedList<Operator> ost = new LinkedList<Operator>();
 
-		parsePrimary();
+		parsePrimary(ctx);
 		while (is(Kind.OPERATOR))
 		{
 			String op = token.text;
 			next();
-			processOperator(ost, op);
+			processOperator(ctx, ost, op);
 
-			parsePrimary();
+			parsePrimary(ctx);
 		}
 		reduceAll(ost);
 	}
 
-	private void parsePrimary() throws ParserException
+	private void parsePrimary(Context ctx) throws ParserException
 	{
 		switch (token.kind)
 		{
@@ -196,7 +183,7 @@ public class Parser
 			break;
 		case L_PAREN:
 			next();
-			parseBinary();
+			parseBinary(ctx);
 			expect(Kind.R_PAREN, ")");
 			break;
 		default:
@@ -204,9 +191,9 @@ public class Parser
 		}
 	}
 
-	private void processOperator(LinkedList<Operator> ost, String op) throws ParserException
+	private void processOperator(Context ctx, LinkedList<Operator> ost, String op) throws ParserException
 	{
-		Operator opdef1 = operators.get(op);
+		Operator opdef1 = ctx.getOperator(op);
 
 		if (opdef1 == null)
 		{
@@ -234,11 +221,6 @@ public class Parser
 		ASTNode y = lst.pop();
 		ASTNode x = lst.pop();
 		lst.push(x.bind(opdef, y));
-	}
-
-	private void defineOperator(String op, String nodeName, boolean right)
-	{
-		operators.put(op, new Operator(op, nodeName, right));
 	}
 
 	private boolean is(Kind kind)
