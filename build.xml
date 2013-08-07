@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="jar" name="InfixPP" basedir=".">
+
+	<property name="target-jar" value="infixpp.jar"/>
+
+	<target name="mkdir">
+		<mkdir dir="bin"/>
+	</target>
+
+	<target name="compile" depends="mkdir">
+		<javac srcdir="src" destdir="bin" encoding="UTF-8" source="1.6" target="1.6" includeantruntime="no"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${target-jar}" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="infixpp.Main"/>
+			</manifest>
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="bin" file="${target-jar}"/>
+	</target>
+
+</project>
