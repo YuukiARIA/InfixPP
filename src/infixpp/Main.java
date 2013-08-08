@@ -51,7 +51,7 @@ public class Main
 		}
 		catch (FileNotFoundException e)
 		{
-			e.printStackTrace();
+			System.err.println("cannot open file \"" + fileName + "\"");
 		}
 		catch (IOException e)
 		{
