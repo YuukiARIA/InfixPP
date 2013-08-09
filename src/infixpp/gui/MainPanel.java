@@ -1,5 +1,6 @@
 package infixpp.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -25,15 +26,21 @@ public class MainPanel extends JPanel
 					new TreeGraph.Leaf("2")),
 				new TreeGraph.Leaf("3"));
 
-		layoutCalculator = new LayoutCalculator(32, 80, 80);
+		layoutCalculator = new LayoutCalculator(32, 50, 50);
 		drawer = new TreeGraphDrawer(32);
 	}
 
 	private void draw(Graphics2D g)
 	{
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		layoutCalculator.layout(treeGraph, 0, 0);
-		drawer.draw((Graphics2D)g, treeGraph);
+
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, getWidth(), getHeight());
+
+		layoutCalculator.layout(treeGraph);
+		g.setColor(Color.RED);
+		g.drawRect(10, 10, layoutCalculator.getWidth(), layoutCalculator.getHeight());
+		drawer.draw((Graphics2D)g, 10, 10, treeGraph);
 	}
 
 	protected void paintComponent(Graphics g)
