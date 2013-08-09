@@ -24,13 +24,6 @@ public class MainPanel extends JPanel
 	{
 		setPreferredSize(new Dimension(300, 300));
 
-		treeGraph =
-			new TreeGraph.Node("+",
-				new TreeGraph.Node("*",
-					new TreeGraph.Leaf("1"),
-					new TreeGraph.Leaf("2")),
-				new TreeGraph.Leaf("3"));
-
 		layoutCalculator = new LayoutCalculator(32, 50, 50);
 		drawer = new TreeGraphDrawer();
 	}
@@ -57,22 +50,23 @@ public class MainPanel extends JPanel
 
 	public void saveImage(File file) throws IOException
 	{
-		layoutCalculator.layout(treeGraph);
-		int width = layoutCalculator.getWidth() + 40;
-		int height = layoutCalculator.getHeight() + 40;
-		BufferedImage image = new BufferedImage(width, height, Transparency.OPAQUE);
-		Graphics2D g = (Graphics2D)image.getGraphics();
-		draw(g, width, height);
-		g.dispose();
-		ImageIO.write(image, "png", file);
+		if (treeGraph != null)
+		{
+			layoutCalculator.layout(treeGraph);
+			int width = layoutCalculator.getWidth() + 40;
+			int height = layoutCalculator.getHeight() + 40;
+			BufferedImage image = new BufferedImage(width, height, Transparency.OPAQUE);
+			Graphics2D g = (Graphics2D)image.getGraphics();
+			fillBackground(g, width, height);
+			draw(g, width, height);
+			g.dispose();
+			ImageIO.write(image, "png", file);
+		}
 	}
 
 	private void draw(Graphics2D g, int width, int height)
 	{
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, width, height);
 
 		int x0 = (width - layoutCalculator.getWidth()) / 2;
 		int y0 = (height - layoutCalculator.getHeight()) / 2;
@@ -81,7 +75,17 @@ public class MainPanel extends JPanel
 
 	protected void paintComponent(Graphics g)
 	{
-		layoutCalculator.layout(treeGraph);
-		draw((Graphics2D)g, getWidth(), getHeight());
+		fillBackground(g, getWidth(), getHeight());
+		if (treeGraph != null)
+		{
+			layoutCalculator.layout(treeGraph);
+			draw((Graphics2D)g, getWidth(), getHeight());
+		}
+	}
+
+	private static void fillBackground(Graphics g, int width, int height)
+	{
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, width, height);
 	}
 }
