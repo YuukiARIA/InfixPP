@@ -6,6 +6,11 @@ public abstract class TreeGraph
 	private int x;
 	private int y;
 
+	public TreeGraph(String label)
+	{
+		this.label = label;
+	}
+
 	public void setLocation(int x, int y)
 	{
 		this.x = x;
@@ -34,8 +39,9 @@ public abstract class TreeGraph
 		private TreeGraph left;
 		private TreeGraph right;
 
-		public Node(TreeGraph left, TreeGraph right)
+		public Node(String label, TreeGraph left, TreeGraph right)
 		{
+			super(label);
 			this.left = left;
 			this.right = right;
 		}
@@ -58,6 +64,11 @@ public abstract class TreeGraph
 
 	public static class Leaf extends TreeGraph
 	{
+		public Leaf(String label)
+		{
+			super(label);
+		}
+
 		public <P, R> R accept(Visitor<P, R> visitor, P param)
 		{
 			return visitor.visit(this, param);
