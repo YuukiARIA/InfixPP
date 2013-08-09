@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -34,8 +34,11 @@ public class MainFrame extends JFrame
 
 	public MainFrame()
 	{
+		setTitle("InfixPP GUI");
+
+		JPanel panelRight = new JPanel(new BorderLayout());
 		mainPanel = new MainPanel();
-		add(mainPanel);
+		panelRight.add(mainPanel, BorderLayout.CENTER);
 
 		sliderHGap = new JSlider(0, 100, 20);
 		sliderHGap.addChangeListener(new ChangeListener()
@@ -65,10 +68,8 @@ public class MainFrame extends JFrame
 			}
 		});
 
-		JTabbedPane tab = new JTabbedPane();
-
 		JPanel panelEdit = new JPanel(new BorderLayout());
-		textCode = new JTextArea();
+		textCode = new JTextArea(20, 40);
 		textCode.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		panelEdit.add(new JScrollPane(textCode), BorderLayout.CENTER);
 		buttonUpdate = new JButton("parse");
@@ -80,16 +81,18 @@ public class MainFrame extends JFrame
 			}
 		});
 		panelEdit.add(buttonUpdate, BorderLayout.SOUTH);
-		tab.addTab("Code", panelEdit);
 
 		JPanel panelSliders = new JPanel();
 		panelSliders.setLayout(new BoxLayout(panelSliders, BoxLayout.Y_AXIS));
 		panelSliders.add(sliderHGap);
 		panelSliders.add(sliderVGap);
 		panelSliders.add(sliderNodeSize);
-		tab.addTab("View Settings", panelSliders);
+		panelRight.add(panelSliders, BorderLayout.SOUTH);
 
-		add(tab, BorderLayout.SOUTH);
+		JSplitPane split = new JSplitPane();
+		split.setLeftComponent(panelEdit);
+		split.setRightComponent(panelRight);
+		add(split, BorderLayout.CENTER);
 
 		pack();
 	}
