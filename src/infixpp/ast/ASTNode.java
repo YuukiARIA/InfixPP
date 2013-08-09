@@ -9,6 +9,8 @@ public abstract class ASTNode
 		return new Binary(op, this, y);
 	}
 
+	public abstract <P, R> R accept(Visitor<P, R> visitor, P param);
+
 	public static class Binary extends ASTNode
 	{
 		public final Operator operator;
@@ -20,6 +22,11 @@ public abstract class ASTNode
 			this.operator = operator;
 			this.x = x;
 			this.y = y;
+		}
+
+		public <P, R> R accept(Visitor<P, R> visitor, P param)
+		{
+			return visitor.visit(this, param);
 		}
 
 		public String toString()
@@ -37,9 +44,20 @@ public abstract class ASTNode
 			this.value = value;
 		}
 
+		public <P, R> R accept(Visitor<P, R> visitor, P param)
+		{
+			return visitor.visit(this, param);
+		}
+
 		public String toString()
 		{
 			return value;
 		}
+	}
+
+	public static interface Visitor<P, R>
+	{
+		public R visit(Binary b, P param);
+		public R visit(Literal l, P param);
 	}
 }
