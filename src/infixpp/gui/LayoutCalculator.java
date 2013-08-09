@@ -30,13 +30,13 @@ public class LayoutCalculator
 
 		public Void visit(Node node, Integer y0)
 		{
-			node.getLeft().accept(this, y0 + vgap);
+			node.getLeft().accept(this, y0 + nodeSize + vgap);
 
-			x0 += hgap;
+			x0 += nodeSize / 2 + hgap;
 			node.setLocation(x0 + nodeSize / 2, y0 + nodeSize / 2);
-			x0 += hgap;
+			x0 += nodeSize / 2 + hgap;
 
-			node.getRight().accept(this, y0 + vgap);
+			node.getRight().accept(this, y0 + nodeSize + vgap);
 			return null;
 		}
 
