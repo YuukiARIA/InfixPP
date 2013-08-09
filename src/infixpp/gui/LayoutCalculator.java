@@ -42,6 +42,7 @@ public class LayoutCalculator
 
 	public void layout(TreeGraph treeGraph)
 	{
+		width = height = 0;
 		visitor.traverse(treeGraph);
 	}
 
