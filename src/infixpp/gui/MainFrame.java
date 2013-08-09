@@ -1,9 +1,15 @@
 package infixpp.gui;
 
+import infixpp.ast.ASTNode;
+import infixpp.ast.Context;
+import infixpp.ast.parser.Parser;
+import infixpp.ast.parser.exception.ParserException;
+
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -90,5 +96,20 @@ public class MainFrame extends JFrame
 
 	private void parse(String code)
 	{
+		Context ctx = new Context();
+		Parser parser = new Parser(code);
+		try
+		{
+			List<ASTNode> list = parser.parse(ctx);
+			if (!list.isEmpty())
+			{
+				mainPanel.setTreeGraph(TreeGraphTransformer.toTreeGraph(list.get(0)));
+				mainPanel.repaint();
+			}
+		}
+		catch (ParserException e)
+		{
+			System.err.println(e.getMessage());
+		}
 	}
 }
