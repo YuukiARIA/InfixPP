@@ -30,6 +30,11 @@ public class MainPanel extends JPanel
 		drawer = new TreeGraphDrawer();
 	}
 
+	public void setTreeGraph(TreeGraph treeGraph)
+	{
+		this.treeGraph = treeGraph;
+	}
+
 	public void setNodeSize(int nodeSize)
 	{
 		layoutCalculator.setNodeSize(nodeSize);
