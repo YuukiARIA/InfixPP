@@ -3,6 +3,24 @@ package infixpp.gui;
 public abstract class TreeGraph
 {
 	private String label;
+	private int x;
+	private int y;
+
+	public void setLocation(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+	}
+
+	public int getX()
+	{
+		return x;
+	}
+
+	public int getY()
+	{
+		return y;
+	}
 
 	public String getLabel()
 	{
