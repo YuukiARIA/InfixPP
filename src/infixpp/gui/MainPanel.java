@@ -17,7 +17,7 @@ public class MainPanel extends JPanel
 
 	public MainPanel()
 	{
-		setPreferredSize(new Dimension(500, 500));
+		setPreferredSize(new Dimension(300, 300));
 
 		treeGraph =
 			new TreeGraph.Node("+",
@@ -27,7 +27,22 @@ public class MainPanel extends JPanel
 				new TreeGraph.Leaf("3"));
 
 		layoutCalculator = new LayoutCalculator(32, 50, 50);
-		drawer = new TreeGraphDrawer(32);
+		drawer = new TreeGraphDrawer();
+	}
+
+	public void setNodeSize(int nodeSize)
+	{
+		layoutCalculator.setNodeSize(nodeSize);
+	}
+
+	public void setHorizontalGap(int hgap)
+	{
+		layoutCalculator.setHorizontalGap(hgap);
+	}
+
+	public void setVerticalGap(int vgap)
+	{
+		layoutCalculator.setVerticalGap(vgap);
 	}
 
 	private void draw(Graphics2D g)
@@ -38,9 +53,10 @@ public class MainPanel extends JPanel
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		layoutCalculator.layout(treeGraph);
-		g.setColor(Color.RED);
-		g.drawRect(10, 10, layoutCalculator.getWidth(), layoutCalculator.getHeight());
-		drawer.draw((Graphics2D)g, 10, 10, treeGraph);
+
+		int x0 = (getWidth() - layoutCalculator.getWidth()) / 2;
+		int y0 = (getHeight() - layoutCalculator.getHeight()) / 2;
+		drawer.draw((Graphics2D)g, x0, y0, layoutCalculator.getNodeSize(), treeGraph);
 	}
 
 	protected void paintComponent(Graphics g)

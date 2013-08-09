@@ -1,6 +1,6 @@
 package infixpp.gui;
 
-import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
@@ -16,11 +16,15 @@ public class Main
 		{
 		}
 
-		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		f.add(new MainPanel());
-		f.pack();
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				MainFrame f = new MainFrame();
+				f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				f.setLocationRelativeTo(null);
+				f.setVisible(true);
+			}
+		});
 	}
 }

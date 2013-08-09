@@ -15,14 +15,14 @@ public class TreeGraphDrawer
 	private Color leafColor = new Color(255, 230, 230);
 	private VisitorImpl visitor;
 
-	public TreeGraphDrawer(int nodeSize)
+	public TreeGraphDrawer()
 	{
-		this.nodeSize = nodeSize;
 		visitor = new VisitorImpl();
 	}
 
-	public void draw(Graphics2D g, int x0, int y0, TreeGraph treeGraph)
+	public void draw(Graphics2D g, int x0, int y0, int nodeSize, TreeGraph treeGraph)
 	{
+		this.nodeSize = nodeSize;
 		this.x0 = x0;
 		this.y0 = y0;
 		visitor.traverse(treeGraph, g);
