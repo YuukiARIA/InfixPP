@@ -5,8 +5,11 @@ import infixpp.ast.Context;
 import infixpp.ast.parser.exception.LexerException;
 import infixpp.ast.parser.exception.ParserException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class Parser
@@ -22,8 +25,9 @@ public class Parser
 		lexer = new Lexer(text);
 	}
 
-	public void parse(Context ctx) throws ParserException
+	public List<ASTNode> parse(Context ctx) throws ParserException
 	{
+		List<ASTNode> astList = new ArrayList<ASTNode>();
 		next();
 		while (!is(Kind.END))
 		{
@@ -37,13 +41,15 @@ public class Parser
 			}
 			else if (is(Kind.KW_TRANSLATE))
 			{
-				parseTranslate(ctx);
+				ASTNode parsed = parseTranslate(ctx);
+				astList.add(parsed);
 			}
 			else
 			{
 				throw makeException("statement must be started with Define/Order/Translate.");
 			}
 		}
+		return Collections.unmodifiableList(astList);
 	}
 
 	private void parseDefinition(Context ctx) throws ParserException
@@ -144,7 +150,7 @@ public class Parser
 		}
 	}
 
-	private void parseTranslate(Context ctx) throws ParserException
+	private ASTNode parseTranslate(Context ctx) throws ParserException
 	{
 		expect(Kind.KW_TRANSLATE, "Translate");
 
@@ -155,6 +161,7 @@ public class Parser
 
 		expect(Kind.KW_END, "End");
 		System.out.println(lst.peek());
+		return lst.pop();
 	}
 
 	private void parseBinary(Context ctx) throws ParserException
