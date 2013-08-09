@@ -4,6 +4,7 @@ import infixpp.gui.TreeGraph.Leaf;
 import infixpp.gui.TreeGraph.Node;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 public class TreeGraphDrawer
@@ -43,7 +44,16 @@ public class TreeGraphDrawer
 		g.setColor(Color.BLACK);
 		g.drawOval(nodeX, nodeY, nodeSize, nodeSize);
 
-		g.drawString(node.getLabel(), x0 + node.getX(), y0 + node.getY());
+		drawLabel(g, node);
+	}
+
+	private void drawLabel(Graphics2D g, TreeGraph node)
+	{
+		String s = node.getLabel();
+		FontMetrics fm = g.getFontMetrics();
+		int x = x0 + node.getX() - fm.stringWidth(s) / 2;
+		int y = y0 + node.getY() - fm.getHeight() / 2 + fm.getAscent();
+		g.drawString(s, x, y);
 	}
 
 	private class VisitorImpl implements TreeGraph.Visitor<Graphics2D, Void>

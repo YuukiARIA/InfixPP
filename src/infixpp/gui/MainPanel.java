@@ -61,7 +61,7 @@ public class MainPanel extends JPanel
 
 		int x0 = (getWidth() - layoutCalculator.getWidth()) / 2;
 		int y0 = (getHeight() - layoutCalculator.getHeight()) / 2;
-		drawer.draw((Graphics2D)g, x0, y0, layoutCalculator.getNodeSize(), treeGraph);
+		drawer.draw(g, x0, y0, layoutCalculator.getNodeSize(), treeGraph);
 	}
 
 	protected void paintComponent(Graphics g)
