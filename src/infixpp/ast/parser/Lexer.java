@@ -121,7 +121,7 @@ public class Lexer
 		}
 
 		buf.setLength(0);
-		while (!end() && !Character.isWhitespace(peek()))
+		while (!end() && isValidOpPart(peek()))
 		{
 			buf.append(peek());
 			succ();
@@ -167,7 +167,7 @@ public class Lexer
 		{
 			succ();
 			skipws();
-			while (!end() && peek() != '\'' && !Character.isWhitespace(peek()))
+			while (!end() && peek() != '\'' && isValidOpPart(peek()))
 			{
 				buf.append(peek());
 				succ();
@@ -222,5 +222,10 @@ public class Lexer
 	private static boolean isAlpha(char c)
 	{
 		return 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z';
+	}
+
+	private static boolean isValidOpPart(char c)
+	{
+		return !Character.isWhitespace(c) && c != '"' && c != '(' && c != ')';
 	}
 }
