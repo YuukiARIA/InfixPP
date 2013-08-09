@@ -9,6 +9,8 @@ import java.awt.Graphics2D;
 public class TreeGraphDrawer
 {
 	private int nodeSize;
+	private Color nodeColor = new Color(230, 230, 255);
+	private Color leafColor = new Color(255, 230, 230);
 	private VisitorImpl visitor;
 
 	public TreeGraphDrawer(int nodeSize)
@@ -28,9 +30,9 @@ public class TreeGraphDrawer
 		g.drawLine(a.getX(), a.getY(), b.getX(), b.getY());
 	}
 
-	private void drawNode(Graphics2D g, TreeGraph node)
+	private void drawNode(Graphics2D g, TreeGraph node, Color fillColor)
 	{
-		g.setColor(Color.WHITE);
+		g.setColor(fillColor);
 		g.fillOval(node.getX() - nodeSize / 2, node.getY() - nodeSize / 2, nodeSize, nodeSize);
 		g.setColor(Color.BLACK);
 		g.drawOval(node.getX() - nodeSize / 2, node.getY() - nodeSize / 2, nodeSize, nodeSize);
@@ -45,7 +47,7 @@ public class TreeGraphDrawer
 			drawEdge(g, node, node.getLeft());
 			drawEdge(g, node, node.getRight());
 
-			drawNode(g, node);
+			drawNode(g, node, nodeColor);
 			node.getLeft().accept(this, g);
 			node.getRight().accept(this, g);
 			return null;
@@ -53,7 +55,7 @@ public class TreeGraphDrawer
 
 		public Void visit(Leaf leaf, Graphics2D g)
 		{
-			drawNode(g, leaf);
+			drawNode(g, leaf, leafColor);
 			return null;
 		}
 	}
