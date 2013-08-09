@@ -20,6 +20,26 @@ public class LayoutCalculator
 		visitor = new VisitorImpl();
 	}
 
+	public int getNodeSize()
+	{
+		return nodeSize;
+	}
+
+	public void setNodeSize(int nodeSize)
+	{
+		this.nodeSize = nodeSize;
+	}
+
+	public void setHorizontalGap(int hgap)
+	{
+		this.hgap = hgap;
+	}
+
+	public void setVerticalGap(int vgap)
+	{
+		this.vgap = vgap;
+	}
+
 	public void layout(TreeGraph treeGraph)
 	{
 		visitor.traverse(treeGraph);
