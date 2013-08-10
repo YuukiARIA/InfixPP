@@ -7,8 +7,11 @@ An abstract syntax tree printer for binary expressions.
 
 Run
 ---------------
-`java -jar infixpp.jar <file>`
+`java -jar infixpp.jar <files>`
 
+GUI mode (experimental):
+
+`java -cp infixpp.jar infixpp.gui.Main`
 
 Examples
 ---------------
