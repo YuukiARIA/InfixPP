@@ -9,12 +9,9 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -33,6 +30,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+
+import util.TextFileIO;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame
@@ -138,25 +137,28 @@ public class MainFrame extends JFrame
 			File file = chooser.getSelectedFile();
 			try
 			{
-				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-				StringBuilder buf = new StringBuilder();
-				String line;
-				boolean first = true;
-				while ((line = reader.readLine()) != null)
-				{
-					if (!first)
-					{
-						buf.append('\n');
-					}
-					buf.append(line);
-					first = false;
-				}
-				reader.close();
-				textCode.setText(buf.toString());
+				textCode.setText(TextFileIO.read(file));
 			}
 			catch (FileNotFoundException e)
 			{
 				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void saveAs()
+	{
+		JFileChooser chooser = new JFileChooser(new File("."));
+		if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			try
+			{
+				TextFileIO.write(file, textCode.getText());
 			}
 			catch (IOException e)
 			{
@@ -201,6 +203,19 @@ public class MainFrame extends JFrame
 				}
 			});
 			menuFile.add(itemOpen);
+
+			menuFile.addSeparator();
+
+			JMenuItem itemSaveAs = new JMenuItem("Save As...");
+			itemSaveAs.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					saveAs();
+				}
+			});
+			menuFile.add(itemSaveAs);
+
 			final JMenuItem itemSaveImage = new JMenuItem("Export Image...");
 			itemSaveImage.addActionListener(new ActionListener()
 			{
@@ -210,6 +225,9 @@ public class MainFrame extends JFrame
 				}
 			});
 			menuFile.add(itemSaveImage);
+
+			menuFile.addSeparator();
+
 			JMenuItem itemExit = new JMenuItem("Exit");
 			itemExit.addActionListener(new ActionListener()
 			{
