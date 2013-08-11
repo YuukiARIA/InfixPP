@@ -28,6 +28,11 @@ public class MainPanel extends JPanel
 		drawer = new TreeGraphDrawer();
 	}
 
+	public boolean hasTreeGraph()
+	{
+		return treeGraph != null;
+	}
+
 	public void setTreeGraph(TreeGraph treeGraph)
 	{
 		this.treeGraph = treeGraph;

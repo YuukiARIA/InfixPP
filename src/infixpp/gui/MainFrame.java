@@ -9,11 +9,21 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -21,6 +31,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame
@@ -94,6 +106,8 @@ public class MainFrame extends JFrame
 		split.setRightComponent(panelRight);
 		add(split, BorderLayout.CENTER);
 
+		setJMenuBar(new MainMenuBar());
+
 		pack();
 	}
 
@@ -113,6 +127,115 @@ public class MainFrame extends JFrame
 		catch (ParserException e)
 		{
 			System.err.println(e.getMessage());
+		}
+	}
+
+	private void openFile()
+	{
+		JFileChooser chooser = new JFileChooser(new File("."));
+		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			try
+			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+				StringBuilder buf = new StringBuilder();
+				String line;
+				boolean first = true;
+				while ((line = reader.readLine()) != null)
+				{
+					if (!first)
+					{
+						buf.append('\n');
+					}
+					buf.append(line);
+					first = false;
+				}
+				reader.close();
+				textCode.setText(buf.toString());
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void exportImage()
+	{
+		JFileChooser chooser = new JFileChooser(new File("."));
+		if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			try
+			{
+				mainPanel.saveImage(file);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void close()
+	{
+		dispose();
+	}
+
+	private class MainMenuBar extends JMenuBar
+	{
+		public MainMenuBar()
+		{
+			JMenu menuFile = new JMenu("File");
+			JMenuItem itemOpen = new JMenuItem("Open File...");
+			itemOpen.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					openFile();
+				}
+			});
+			menuFile.add(itemOpen);
+			final JMenuItem itemSaveImage = new JMenuItem("Export Image...");
+			itemSaveImage.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					exportImage();
+				}
+			});
+			menuFile.add(itemSaveImage);
+			JMenuItem itemExit = new JMenuItem("Exit");
+			itemExit.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					close();
+				}
+			});
+			menuFile.add(itemExit);
+
+			menuFile.addMenuListener(new MenuListener()
+			{
+				public void menuSelected(MenuEvent e)
+				{
+					itemSaveImage.setEnabled(mainPanel.hasTreeGraph());
+				}
+
+				public void menuDeselected(MenuEvent e)
+				{
+				}
+
+				public void menuCanceled(MenuEvent e)
+				{
+				}
+			});
+			add(menuFile);
 		}
 	}
 }
